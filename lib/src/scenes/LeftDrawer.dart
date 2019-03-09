@@ -20,7 +20,7 @@ class LeftDrawerState extends State<LeftDrawer> {
           children: <Widget>[
             FlatButton(
               child: ProfilePic(height: 100.0, width: 100.0,),
-              onPressed: () => print('edit profile'),
+              onPressed: () => Navigator.pushNamed(context, '/edit'),
             ),
             Container(
               padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
