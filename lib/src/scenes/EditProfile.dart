@@ -37,14 +37,24 @@ class EditProfileState extends State<EditProfile> {
         children: <Widget>[
           FlatButton(
             child: ProfilePic(),
-            onPressed: () => print('Mudar foto'),
+            onPressed: () => print('Mudar foto'),//character sheet
           ),
           SingleChildScrollView(
             child: Form(
               key: _formKey,
               child: Column(
                 children: <Widget>[
-                  Text('data') //TEXTFORMFIELD FOR TEXTAREA???????
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: CustomLocalization.of(context).userDescription, 
+                    ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 10, //overflowing screen
+                  ),
+                  RaisedButton(
+                    child: Text(CustomLocalization.of(context).save),
+                    onPressed: () => print('saved'),
+                  )
                 ],
               ),
             ),
