@@ -1,9 +1,8 @@
 # skeletal_app
-<<<<<<< HEAD
-personal template for flutter app
-=======
 
-A new Flutter project.
+This is a personal template project for apps using the Flutter framework and Dart language. At its current state it contains simple page navigation with log in forms (using static data at the moment), language localization and modular color configuration.
+
+---------------------------
 
 ## Getting Started
 
@@ -17,4 +16,3 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our 
 [online documentation](https://flutter.io/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
->>>>>>> initial commit
