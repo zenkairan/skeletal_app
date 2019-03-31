@@ -32,15 +32,17 @@ class EditProfileState extends State<EditProfile> {
 
 
   Widget _renderPage(BuildContext context){
-    return Center( 
-      child: Column(
-        children: <Widget>[
-          FlatButton(
-            child: ProfilePic(),
-            onPressed: () => print('Mudar foto'),//character sheet
-          ),
-          SingleChildScrollView(
-            child: Form(
+    return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FlatButton(
+              child: ProfilePic(),
+              onPressed: () => print('Mudar foto'),//character sheet
+            ),
+            Form(
               key: _formKey,
               child: Column(
                 children: <Widget>[
@@ -49,7 +51,7 @@ class EditProfileState extends State<EditProfile> {
                       labelText: CustomLocalization.of(context).userDescription, 
                     ),
                   keyboardType: TextInputType.multiline,
-                  maxLines: 10, //overflowing screen
+                  maxLines: null, //overflowing screen
                   ),
                   RaisedButton(
                     child: Text(CustomLocalization.of(context).save),
@@ -58,9 +60,8 @@ class EditProfileState extends State<EditProfile> {
                 ],
               ),
             ),
-          )
-        ],
-      )
+          ],
+        )
     );
   }
 }
