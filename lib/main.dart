@@ -7,6 +7,7 @@ import 'package:skeletal_app/src/scenes/LoginPage.dart';
 import 'package:skeletal_app/src/scenes/RegisterPage.dart';
 import 'package:skeletal_app/src/scenes/Index.dart';
 import 'package:skeletal_app/src/scenes/ProductDetail.dart';
+import 'package:skeletal_app/src/scenes/EditProfile.dart';
 
 void main(){
 
@@ -18,6 +19,7 @@ void main(){
         '/register': (BuildContext context) => RegisterPage(),
         '/index': (BuildContext context) => Index(),
         '/product': (BuildContext context) => ProductDetail(),
+        '/edit': (BuildContext context) => EditProfile(),
       },
       localizationsDelegates: [
         const CustomLocalizationDelegate(),

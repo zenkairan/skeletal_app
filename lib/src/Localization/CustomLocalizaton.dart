@@ -28,6 +28,9 @@ class CustomLocalization {
       'send': 'Send',
       'home': 'Home',
       'product': 'Product',
+      'edit': 'Edit',
+      'user_description': 'About me',
+      'save': 'Save',
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -43,6 +46,9 @@ class CustomLocalization {
       'send': 'Enviar',
       'home': 'Home',
       'product': 'Produto',
+      'edit': 'Editar',
+      'user_description': 'Minha descrição',
+      'save': 'Salvar',
     },
   };
 
@@ -85,6 +91,15 @@ class CustomLocalization {
   }
   String get product{
     return _localizedValues[locale.languageCode]['product'];
+  }
+  String get edit{
+    return _localizedValues[locale.languageCode]['edit'];
+  }
+  String get userDescription{
+    return _localizedValues[locale.languageCode]['user_description'];
+  }
+  String get save{
+    return _localizedValues[locale.languageCode]['save'];
   }
 }
 
