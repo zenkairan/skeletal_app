@@ -31,6 +31,7 @@ class CustomLocalization {
       'edit': 'Edit',
       'user_description': 'About me',
       'save': 'Save',
+      'facebook': 'Login with Facebook',
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -49,6 +50,7 @@ class CustomLocalization {
       'edit': 'Editar',
       'user_description': 'Minha descrição',
       'save': 'Salvar',
+      'facebook': 'Login com Facebook',
     },
   };
 
@@ -100,6 +102,9 @@ class CustomLocalization {
   }
   String get save{
     return _localizedValues[locale.languageCode]['save'];
+  }
+  String get facebook{
+    return _localizedValues[locale.languageCode]['facebook'];
   }
 }
 

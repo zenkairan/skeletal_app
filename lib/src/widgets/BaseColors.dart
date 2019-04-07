@@ -9,4 +9,5 @@ class BaseColors{
   static final Color cardColor = Colors.lightBlueAccent;
   static final Color cardColorSelected = Colors.lightBlue;
   static final Color borderColor = Colors.blue;
+  static final Color facebook = Color.fromRGBO(66, 103, 178, 1.0);
 }

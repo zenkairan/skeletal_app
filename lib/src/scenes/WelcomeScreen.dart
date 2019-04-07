@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/beans/User.dart';
 
 /**
  * tela com opções para login e cadastro.
@@ -19,7 +21,7 @@ class WelcomeScreen extends StatefulWidget{
 class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
 
   bool isLoggedIn = false;
-  dynamic profileData = null;
+  UserSingleton loggedUser = new UserSingleton();
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -54,12 +56,14 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
               color: BaseColors.buttonColor,
               onPressed: () => Navigator.pushNamed(context, '/register'),
             ),
-            isLoggedIn
-                ? Text("Logged In")
-                : RaisedButton(
-                    child: Text("Login with Facebook"),
-                    onPressed: () => initiateFacebookLogin(),
-                  ),
+            RaisedButton(
+              child: Text(CustomLocalization.of(context).facebook, style: TextStyle(color: BaseColors.textColor)),
+              color: BaseColors.facebook,
+              onPressed: () {
+                initiateFacebookLogin();
+                Navigator.pushNamed(context, '/index');
+                },
+            ),
           ],
         ),
       ),
@@ -89,10 +93,9 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
         .accessToken.token}');
 
         var profile = json.decode(graphResponse.body);
-        print(profile.toString());
         
         onLoginStatusChanged(true, profileData: profile);
-        _initFacebookUser(profileData);
+        _initFacebookUser(profile);
         break;
     }
   }
@@ -100,12 +103,17 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
   void onLoginStatusChanged(bool isLoggedIn, {dynamic profileData}) {
     setState(() {
       this.isLoggedIn = isLoggedIn;
-      this.profileData = profileData;
     });
   }
 
-  void _initFacebookUser(dynamic profileData){
     //create user from facebook data
+  void _initFacebookUser(dynamic profileData){
+    User user = new User(profileData['name'], profileData['email'], null);
+    user.facebookId = profileData['id'];
+    user.picture = profileData['picture']['data']['url'];
+    this.loggedUser.user = user;
+
+
   }
 
 }
