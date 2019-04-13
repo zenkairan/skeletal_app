@@ -5,6 +5,8 @@ class User{
   String name;
   String email;
   String password;
+  String facebookId;
+  String picture;
   
   User(String name, String email, String password){
     this.name = name;
@@ -16,13 +18,16 @@ class User{
     id = json['id'],
     name = json['name'],
     email = json['email'],
-    password = json['password'];
+    password = json['password'],
+    facebookId = json['facebookId'],
+    picture = json['picture'];
 
   Map<String, dynamic> toJson() =>
   {
     'id': id,
     'name': name,
     'email': email,
-    'password': password
+    'password': password,
+    'facebookId': facebookId
   };
 }
