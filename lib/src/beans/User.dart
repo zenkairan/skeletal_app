@@ -28,6 +28,7 @@ class User{
     'name': name,
     'email': email,
     'password': password,
-    'facebookId': facebookId
+    'facebookId': facebookId,
+    'picture': picture,
   };
 }
