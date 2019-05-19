@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
 
 
 /**
@@ -19,6 +24,7 @@ class RegisterPageState extends State<RegisterPage>{
   String _name;
   String _email;
   String _password;
+  UserSingleton appUser = new UserSingleton();
 
 
   @override
@@ -86,9 +92,7 @@ class RegisterPageState extends State<RegisterPage>{
                 onPressed: (){
                   if(_formKey.currentState.validate()){
                     _formKey.currentState.save();
-                    print('saved');
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/index');
+                    saveUser();
                   }else{
                     print('invalid inputs');
                   }
@@ -101,5 +105,21 @@ class RegisterPageState extends State<RegisterPage>{
         ),
       ),
     );
+  }
+
+  Future saveUser() async{
+    //usar spinner (character sheet)
+    //englobar em try catch com toast
+    User newUser = new User(_name, _email, _password);
+    var response = await Connection.postUser(json.encode(newUser));
+    if(response.statusCode == 200){
+      appUser.user = User.fromJason(json.decode(response.body));
+      print(appUser.user);
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/index');
+    }else{
+      print('connection error');
+      //usar toast
+    }
   }
 }

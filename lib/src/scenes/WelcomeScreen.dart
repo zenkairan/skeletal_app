@@ -7,6 +7,7 @@ import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
 import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
 
 /**
  * tela com opções para login e cadastro.
@@ -64,6 +65,14 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
                 Navigator.pushNamed(context, '/index');
                 },
             ),
+            //test connection
+            RaisedButton(
+              child: Text('Test connection'),
+              onPressed: (){
+                getUser();
+              },
+              )
+            //---------------
           ],
         ),
       ),
@@ -112,8 +121,16 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
     user.facebookId = profileData['id'];
     user.picture = profileData['picture']['data']['url'];
     this.loggedUser.user = user;
+  }
 
-
+  Future getUser() async {
+    print('test1');
+    var response = await Connection.getUser('5ce076fa16b2eb6dbf5dbbae');
+    print('test2');
+    print(response.body);
+    User user = User.fromJason(json.decode(response.body));
+    print(user);
+    print('json user: ' + json.encode(user));
   }
 
 }
