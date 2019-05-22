@@ -32,6 +32,8 @@ class CustomLocalization {
       'user_description': 'About me',
       'save': 'Save',
       'facebook': 'Login with Facebook',
+      'connectionError': 'Connection error, try again later',
+      'defaultError': 'An error has occurred, try again later', 
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -51,6 +53,8 @@ class CustomLocalization {
       'user_description': 'Minha descrição',
       'save': 'Salvar',
       'facebook': 'Login com Facebook',
+      'connectionError': 'Erro de conexão, tente novamente mais tarde',
+      'defaultError': 'Ocorreu um erro, tente novamente mais tarde',
     },
   };
 
@@ -105,6 +109,12 @@ class CustomLocalization {
   }
   String get facebook{
     return _localizedValues[locale.languageCode]['facebook'];
+  }
+  String get connectionError{
+    return _localizedValues[locale.languageCode]['connectionError'];
+  }
+  String get defaultError{
+    return _localizedValues[locale.languageCode]['defaultError'];
   }
 }
 

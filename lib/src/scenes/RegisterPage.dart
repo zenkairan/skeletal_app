@@ -25,6 +25,7 @@ class RegisterPageState extends State<RegisterPage>{
   String _email;
   String _password;
   UserSingleton appUser = new UserSingleton();
+  BuildContext _innerContext;
 
 
   @override
@@ -34,7 +35,15 @@ class RegisterPageState extends State<RegisterPage>{
         title: Text(CustomLocalization.of(context).register),
         backgroundColor: BaseColors.bar,
       ),
-      body: _loginForm(context),
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _loginForm(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -108,18 +117,33 @@ class RegisterPageState extends State<RegisterPage>{
   }
 
   Future saveUser() async{
-    //usar spinner (character sheet)
-    //englobar em try catch com toast
-    User newUser = new User(_name, _email, _password);
-    var response = await Connection.postUser(json.encode(newUser));
-    if(response.statusCode == 200){
-      appUser.user = User.fromJason(json.decode(response.body));
-      print(appUser.user);
-      Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, '/index');
-    }else{
-      print('connection error');
-      //usar toast
+    try{
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return Dialog(
+              child: Center(//janela branca muito grande
+                child: CircularProgressIndicator(),
+              ),
+            );
+        }
+      );
+      User newUser = new User(_name, _email, _password);
+      var response = await Connection.postUser(json.encode(newUser));
+      Navigator.pop(context); //pop modal
+      if(response.statusCode == 200){
+        appUser.user = User.fromJason(json.decode(response.body));
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, '/index');
+      }else{
+        var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).connectionError),);
+        Scaffold.of(_innerContext).showSnackBar(snackbar);
+      }
+    }catch(e, stackTrace){
+      print(stackTrace);
+      var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).defaultError),);
+      Scaffold.of(_innerContext).showSnackBar(snackbar);
     }
   }
 }
