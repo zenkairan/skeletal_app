@@ -117,6 +117,7 @@ class RegisterPageState extends State<RegisterPage>{
   }
 
   Future saveUser() async{
+    bool isModalUp = false;
     try{
       showDialog(
         context: context,
@@ -129,18 +130,26 @@ class RegisterPageState extends State<RegisterPage>{
             );
         }
       );
+      isModalUp = true;
       User newUser = new User(_name, _email, _password);
       var response = await Connection.postUser(json.encode(newUser));
       Navigator.pop(context); //pop modal
+      isModalUp = false;
+      //se o usuario já estiver cadastrado, retornar statuscode de erro
       if(response.statusCode == 200){
         appUser.user = User.fromJason(json.decode(response.body));
-        Navigator.pop(context);
+        if(isModalUp){
+          Navigator.pop(context);
+        }
         Navigator.pushReplacementNamed(context, '/index');
       }else{
         var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).connectionError),);
         Scaffold.of(_innerContext).showSnackBar(snackbar);
       }
     }catch(e, stackTrace){
+      if(isModalUp){
+        Navigator.pop(context);
+      }
       print(stackTrace);
       var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).defaultError),);
       Scaffold.of(_innerContext).showSnackBar(snackbar);

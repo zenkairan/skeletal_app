@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
 
 /**
  * Formulário de login, após login validado redireciona
@@ -17,6 +21,8 @@ class LoginPageState extends State<LoginPage>{
   final _formKey = GlobalKey<FormState>();
   String _email;
   String _password;
+  UserSingleton appUser = new UserSingleton();
+  BuildContext _innerContext;
 
 
   @override
@@ -26,7 +32,15 @@ class LoginPageState extends State<LoginPage>{
         title: Text(CustomLocalization.of(context).login),
         backgroundColor: BaseColors.bar,
       ),
-      body: _loginForm(context),
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _loginForm(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -72,9 +86,7 @@ class LoginPageState extends State<LoginPage>{
                 onPressed: (){
                   if(_formKey.currentState.validate()){
                     _formKey.currentState.save();
-                    print('saved');
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/index');
+                    login();
                   }else{
                     print('invalid inputs');
                   }
@@ -87,5 +99,57 @@ class LoginPageState extends State<LoginPage>{
         ),
       ),
     );
+  }
+
+
+  Future login() async{
+    print(_email + ' ' + _password);
+    bool isModalUp = false;
+    try{
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return Dialog(
+              child: Center(//janela branca muito grande
+                child: CircularProgressIndicator(),
+              ),
+            );
+        }
+      );
+      isModalUp = true;
+      var response = await Connection.logIn(_email, _password);
+      Navigator.pop(context); //pop modal
+      isModalUp = false;
+      if(response.statusCode == 200){
+        if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
+          appUser.user = User.fromJason(json.decode(response.body));
+          print(appUser.user);
+          if(isModalUp){
+            Navigator.pop(context);
+          }
+          Navigator.pushReplacementNamed(context, '/index');
+        }else{
+          //make a service for snackbar
+          var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
+          Scaffold.of(_innerContext).showSnackBar(snackbar);
+        }
+      }else{
+        var snackbar;
+        if(response.statusCode == 404){
+          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
+        }else{
+          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).connectionError),);
+        }
+        Scaffold.of(_innerContext).showSnackBar(snackbar);
+      }
+    }catch(e, stackTrace){
+      if(isModalUp){
+        Navigator.pop(context); //pop modal
+      }
+      print(stackTrace);
+      var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).defaultError),);
+      Scaffold.of(_innerContext).showSnackBar(snackbar);
+    }
   }
 }

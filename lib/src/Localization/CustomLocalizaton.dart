@@ -34,6 +34,7 @@ class CustomLocalization {
       'facebook': 'Login with Facebook',
       'connectionError': 'Connection error, try again later',
       'defaultError': 'An error has occurred, try again later', 
+      'loginError': 'Invalid username or password',
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -55,6 +56,7 @@ class CustomLocalization {
       'facebook': 'Login com Facebook',
       'connectionError': 'Erro de conexão, tente novamente mais tarde',
       'defaultError': 'Ocorreu um erro, tente novamente mais tarde',
+      'loginError': 'Usuário ou senha inválidos',
     },
   };
 
@@ -115,6 +117,9 @@ class CustomLocalization {
   }
   String get defaultError{
     return _localizedValues[locale.languageCode]['defaultError'];
+  }
+  String get loginError{
+    return _localizedValues[locale.languageCode]['loginError'];
   }
 }
 

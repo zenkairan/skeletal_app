@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Connection{
@@ -11,7 +12,12 @@ class Connection{
   }
 
   static Future<http.Response> postUser(String userJson){
-    print(userJson);
     return http.post(_userUrl, headers: {'Content-Type': "application/json"}, body: userJson);
+  }
+
+  static Future<http.Response> logIn(String userName, String password){
+    print(_userUrl + 'login');
+    return http.post(_userUrl + 'login', headers: {'Content-Type': "application/json"},
+      body: jsonEncode({'email': userName, 'password': password}));
   }
 }
