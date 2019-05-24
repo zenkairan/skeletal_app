@@ -20,4 +20,9 @@ class Connection{
     return http.post(_userUrl + 'login', headers: {'Content-Type': "application/json"},
       body: jsonEncode({'email': userName, 'password': password}));
   }
+
+  static Future<http.Response> loginFacebook(String userJson){
+    return http.post(_userUrl + 'login-facebook', headers: {'Content-Type': "application/json"},
+      body: userJson);
+  }
 }

@@ -103,7 +103,6 @@ class LoginPageState extends State<LoginPage>{
 
 
   Future login() async{
-    print(_email + ' ' + _password);
     bool isModalUp = false;
     try{
       showDialog(

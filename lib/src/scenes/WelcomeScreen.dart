@@ -23,6 +23,8 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
 
   bool isLoggedIn = false;
   UserSingleton loggedUser = new UserSingleton();
+  BuildContext _innerContext;
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -30,7 +32,15 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
         title: Text(CustomLocalization.of(context).welcome),
         backgroundColor: BaseColors.bar,
       ),
-      body: _renderPage(context), //future builder
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _renderPage(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -65,14 +75,6 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
                 Navigator.pushNamed(context, '/index');
                 },
             ),
-            //test connection
-            RaisedButton(
-              child: Text('Test connection'),
-              onPressed: (){
-                getUser();
-              },
-              )
-            //---------------
           ],
         ),
       ),
@@ -120,17 +122,57 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
     User user = new User(profileData['name'], profileData['email'], null);
     user.facebookId = profileData['id'];
     user.picture = profileData['picture']['data']['url'];
-    this.loggedUser.user = user;
+    _facebookLogin(user);
   }
 
-  Future getUser() async {
-    print('test1');
-    var response = await Connection.getUser('5ce076fa16b2eb6dbf5dbbae');
-    print('test2');
-    print(response.body);
-    User user = User.fromJason(json.decode(response.body));
-    print(user);
-    print('json user: ' + json.encode(user));
+//TODO: refatorar showdialog em service
+  Future _facebookLogin(User user) async {
+    bool isModalUp = false;
+    try{
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return Dialog(
+              child: Center(//janela branca muito grande
+                child: CircularProgressIndicator(),
+              ),
+            );
+        }
+      );
+      isModalUp = true;
+      var response = await Connection.loginFacebook(json.encode(user));
+      Navigator.pop(context); //pop modal
+      isModalUp = false;
+      if(response.statusCode == 200){
+        if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
+          loggedUser.user = User.fromJason(json.decode(response.body));
+          if(isModalUp){
+            Navigator.pop(context);
+          }
+          Navigator.pushReplacementNamed(context, '/index');
+        }else{
+          //make a service for snackbar
+          var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
+          Scaffold.of(_innerContext).showSnackBar(snackbar);
+        }
+      }else{
+        var snackbar;
+        if(response.statusCode == 404){
+          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
+        }else{
+          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).connectionError),);
+        }
+        Scaffold.of(_innerContext).showSnackBar(snackbar);
+      }
+    }catch(e, stackTrace){
+      if(isModalUp){
+        Navigator.pop(context); //pop modal
+      }
+      print(stackTrace);
+      var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).defaultError),);
+      Scaffold.of(_innerContext).showSnackBar(snackbar);
+    }
   }
 
 }
