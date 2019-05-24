@@ -7,6 +7,8 @@ import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
 import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
+import 'package:skeletal_app/src/services/CustomDialog.dart';
 
 /**
  * tela com opções para login e cadastro.
@@ -22,6 +24,8 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
 
   bool isLoggedIn = false;
   UserSingleton loggedUser = new UserSingleton();
+  BuildContext _innerContext;
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -29,7 +33,15 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
         title: Text(CustomLocalization.of(context).welcome),
         backgroundColor: BaseColors.bar,
       ),
-      body: _renderPage(context), //future builder
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _renderPage(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -111,9 +123,33 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
     User user = new User(profileData['name'], profileData['email'], null);
     user.facebookId = profileData['id'];
     user.picture = profileData['picture']['data']['url'];
-    this.loggedUser.user = user;
+    _facebookLogin(user);
+  }
 
-
+  _facebookLogin(User user) async {
+    try{
+      CustomDialog.startProgressIndicatorModal(context);
+      var response = await Connection.loginFacebook(json.encode(user));
+      CustomDialog.stopProgressIndicatorModal(context);
+      if(response.statusCode == 200){
+        if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
+          loggedUser.user = User.fromJason(json.decode(response.body));
+          Navigator.pushReplacementNamed(context, '/index');
+        }else{
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
+        }
+      }else{
+        if(response.statusCode == 404){
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
+        }else{
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
+        }
+      }
+    }catch(e, stackTrace){
+      CustomDialog.stopProgressIndicatorModal(context);
+      print(stackTrace);
+      CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).defaultError);
+    }
   }
 
 }

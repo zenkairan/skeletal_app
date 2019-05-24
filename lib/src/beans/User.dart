@@ -1,7 +1,7 @@
 
 //talvez deva conter instancia de profile
 class User{
-  int id;
+  String id;
   String name;
   String email;
   String password;
@@ -15,7 +15,7 @@ class User{
   }
 
   User.fromJason(Map<String, dynamic> json):
-    id = json['id'],
+    id = json['_id'],
     name = json['name'],
     email = json['email'],
     password = json['password'],
@@ -24,10 +24,16 @@ class User{
 
   Map<String, dynamic> toJson() =>
   {
-    'id': id,
+    // '_id': id, id não faz parte do request
     'name': name,
     'email': email,
     'password': password,
-    'facebookId': facebookId
+    'facebookId': facebookId,
+    'picture': picture,
   };
+
+@override
+  String toString(){
+    return ' name: ' + this.name + 'email: ' + this.email;
+  }
 }

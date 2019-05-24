@@ -1,7 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
+import 'package:skeletal_app/src/services/CustomDialog.dart';
 
 
 /**
@@ -19,6 +25,8 @@ class RegisterPageState extends State<RegisterPage>{
   String _name;
   String _email;
   String _password;
+  UserSingleton appUser = new UserSingleton();
+  BuildContext _innerContext;
 
 
   @override
@@ -28,7 +36,15 @@ class RegisterPageState extends State<RegisterPage>{
         title: Text(CustomLocalization.of(context).register),
         backgroundColor: BaseColors.bar,
       ),
-      body: _loginForm(context),
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _loginForm(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -86,9 +102,7 @@ class RegisterPageState extends State<RegisterPage>{
                 onPressed: (){
                   if(_formKey.currentState.validate()){
                     _formKey.currentState.save();
-                    print('saved');
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/index');
+                    saveUser();
                   }else{
                     print('invalid inputs');
                   }
@@ -101,5 +115,25 @@ class RegisterPageState extends State<RegisterPage>{
         ),
       ),
     );
+  }
+
+  Future saveUser() async{
+    try{
+      CustomDialog.startProgressIndicatorModal(context);
+      User newUser = new User(_name, _email, _password);
+      var response = await Connection.postUser(json.encode(newUser));
+      CustomDialog.stopProgressIndicatorModal(context);
+      //se o usuario já estiver cadastrado, retornar statuscode de erro
+      if(response.statusCode == 200){
+        appUser.user = User.fromJason(json.decode(response.body));
+        Navigator.pushReplacementNamed(context, '/index');
+      }else{
+        CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
+      }
+    }catch(e, stackTrace){
+      CustomDialog.stopProgressIndicatorModal(context);
+      print(stackTrace);
+      CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).defaultError);
+    }
   }
 }

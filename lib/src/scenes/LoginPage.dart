@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
+import 'package:skeletal_app/src/services/CustomDialog.dart';
 
 /**
  * Formulário de login, após login validado redireciona
@@ -17,6 +22,8 @@ class LoginPageState extends State<LoginPage>{
   final _formKey = GlobalKey<FormState>();
   String _email;
   String _password;
+  UserSingleton appUser = new UserSingleton();
+  BuildContext _innerContext;
 
 
   @override
@@ -26,7 +33,15 @@ class LoginPageState extends State<LoginPage>{
         title: Text(CustomLocalization.of(context).login),
         backgroundColor: BaseColors.bar,
       ),
-      body: _loginForm(context),
+      body: Builder(
+        //builder é criado ao invés de retornar _loginForm diretamente para criar
+        //um Buildcontext filho do Buildcontext global da página,
+        //para poder usar Scaffold.of() dentro dos wigdets 
+        builder: (BuildContext context){
+          _innerContext = context;
+          return _loginForm(context);
+        },
+      ),
       backgroundColor: BaseColors.background,
     );
   }
@@ -72,9 +87,7 @@ class LoginPageState extends State<LoginPage>{
                 onPressed: (){
                   if(_formKey.currentState.validate()){
                     _formKey.currentState.save();
-                    print('saved');
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/index');
+                    login();
                   }else{
                     print('invalid inputs');
                   }
@@ -87,5 +100,32 @@ class LoginPageState extends State<LoginPage>{
         ),
       ),
     );
+  }
+
+
+  login() async{
+    try{
+      CustomDialog.startProgressIndicatorModal(context);
+      var response = await Connection.logIn(_email, _password);
+      CustomDialog.stopProgressIndicatorModal(context);
+      if(response.statusCode == 200){
+        if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
+          appUser.user = User.fromJason(json.decode(response.body));
+          Navigator.pushReplacementNamed(context, '/index');
+        }else{
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
+        }
+      }else{
+        if(response.statusCode == 404){
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
+        }else{
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
+        }
+      }
+    }catch(e, stackTrace){
+      CustomDialog.stopProgressIndicatorModal(context);
+      print(stackTrace);
+      CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).defaultError);
+    }
   }
 }
