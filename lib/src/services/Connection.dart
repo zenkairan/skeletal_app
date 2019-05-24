@@ -16,7 +16,6 @@ class Connection{
   }
 
   static Future<http.Response> logIn(String userName, String password){
-    print(_userUrl + 'login');
     return http.post(_userUrl + 'login', headers: {'Content-Type': "application/json"},
       body: jsonEncode({'email': userName, 'password': password}));
   }

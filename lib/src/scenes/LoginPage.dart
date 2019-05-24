@@ -6,6 +6,7 @@ import 'package:skeletal_app/src/widgets/BaseColors.dart';
 import 'package:skeletal_app/src/beans/User.dart';
 import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 import 'package:skeletal_app/src/services/Connection.dart';
+import 'package:skeletal_app/src/services/CustomDialog.dart';
 
 /**
  * Formulário de login, após login validado redireciona
@@ -102,53 +103,29 @@ class LoginPageState extends State<LoginPage>{
   }
 
 
-  Future login() async{
-    bool isModalUp = false;
+  login() async{
     try{
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context){
-          return Dialog(
-              child: Center(//janela branca muito grande
-                child: CircularProgressIndicator(),
-              ),
-            );
-        }
-      );
-      isModalUp = true;
+      CustomDialog.startProgressIndicatorModal(context);
       var response = await Connection.logIn(_email, _password);
-      Navigator.pop(context); //pop modal
-      isModalUp = false;
+      CustomDialog.stopProgressIndicatorModal(context);
       if(response.statusCode == 200){
         if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
           appUser.user = User.fromJason(json.decode(response.body));
-          print(appUser.user);
-          if(isModalUp){
-            Navigator.pop(context);
-          }
           Navigator.pushReplacementNamed(context, '/index');
         }else{
-          //make a service for snackbar
-          var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
-          Scaffold.of(_innerContext).showSnackBar(snackbar);
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
         }
       }else{
-        var snackbar;
         if(response.statusCode == 404){
-          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).loginError),);
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
         }else{
-          snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).connectionError),);
+          CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
         }
-        Scaffold.of(_innerContext).showSnackBar(snackbar);
       }
     }catch(e, stackTrace){
-      if(isModalUp){
-        Navigator.pop(context); //pop modal
-      }
+      CustomDialog.stopProgressIndicatorModal(context);
       print(stackTrace);
-      var snackbar = SnackBar(content: Text(CustomLocalization.of(_innerContext).defaultError),);
-      Scaffold.of(_innerContext).showSnackBar(snackbar);
+      CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).defaultError);
     }
   }
 }
