@@ -6,6 +6,7 @@ import 'package:skeletal_app/src/widgets/ProductCard.dart';
 import 'package:skeletal_app/src/widgets/ProfilePic.dart';
 import 'package:skeletal_app/src/widgets/Paragraph.dart';
 import 'package:skeletal_app/src/scenes/LeftDrawer.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 
 /**
  * Página inicial, contendo abas e menu lateral
@@ -19,6 +20,7 @@ class IndexState extends State<Index>{
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
     new GlobalKey<RefreshIndicatorState>();
+  UserSingleton loggedUser = new UserSingleton();
 
   @override
   Widget build(BuildContext context){
@@ -65,18 +67,10 @@ class IndexState extends State<Index>{
       child:Center(
         child: Column(
           children: <Widget>[
-            ProfilePic(),
+            ProfilePic(height: 100.0, width: 100.0, url: (loggedUser.user != null)? loggedUser.user.picture: null,),
             Paragraph(
               textAlign: TextAlign.justify,
-              text: 'scelerisque, metus ut accumsan lacinia, enim magna commodo eros, ' +
-              'facilisis accumsan nisl libero in ipsum. Ut faucibus dolor nulla, nec pellentesque ipsum gravida nec.'+
-              ' Nullam facilisis risus et ante elementum, id volutpat quam tristique. Donec mollis mollis ex,'+
-              ' in maximus ex pulvinar vitae. Praesent consectetur mi ac mauris laoreet, eu bibendum ligula pellentesque.'+
-              ' Cras ante purus, aliquet non ante nec, pretium varius nisi. Nullam auctor felis turpis, ac pellentesque elit egestas a.'+
-              'Duis quis tristique eros. Vivamus posuere ornare mauris, pellentesque lobortis massa suscipit non. Etiam facilisis lacus nec mi consequat finibus.'+
-              ' Aliquam egestas volutpat tincidunt. Donec eu nulla porta, pharetra tortor eget, posuere mauris. Vivamus enim est, bibendum ac metus non, malesuada semper sapien.'+
-              ' Fusce dapibus, ante eget vehicula finibus, quam erat pulvinar leo, a fringilla lectus sapien quis est. Duis eu nunc metus.'+
-              ' Fusce eu lacus sit amet nulla ullamcorper molestie a vitae nibh. Proin varius tincidunt turpis in pretium. Donec tincidunt quam nec quam congue, vitae lacinia mauris mollis.',
+              text: loggedUser.user != null && loggedUser.user.about != null? loggedUser.user.about: '',
             ),
           ],
         ),

@@ -24,4 +24,9 @@ class Connection{
     return http.post(_userUrl + 'login-facebook', headers: {'Content-Type': "application/json"},
       body: userJson);
   }
+
+  static Future<http.Response> editUser(String id, String userJson){
+    return http.put(_userUrl + id, headers: {'Content-Type': "application/json"},
+    body: userJson);
+  }
 }
