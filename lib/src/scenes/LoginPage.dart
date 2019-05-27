@@ -111,7 +111,7 @@ class LoginPageState extends State<LoginPage>{
       if(response.statusCode == 200){
         if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
           appUser.user = User.fromJason(json.decode(response.body));
-          Navigator.pushReplacementNamed(context, '/index');//deve ser push root
+          Navigator.of(context).pushNamedAndRemoveUntil('/index', (Route<dynamic> route) => false);
         }else{
           CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).loginError);
         }

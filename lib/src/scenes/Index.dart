@@ -79,7 +79,12 @@ class IndexState extends State<Index>{
   }
 
   Widget _tab3(BuildContext context){
-    return Text('tab3');
+    return Center(
+      child: RaisedButton(
+        child: Text('Log navigator'),
+        onPressed: () => print(Navigator.of(context)),
+      ),
+    );
   }
 
   List<Widget> _getProducts(){

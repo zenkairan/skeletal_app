@@ -126,7 +126,7 @@ class RegisterPageState extends State<RegisterPage>{
       //se o usuario já estiver cadastrado, retornar statuscode de erro
       if(response.statusCode == 200){
         appUser.user = User.fromJason(json.decode(response.body));
-        Navigator.pushReplacementNamed(context, '/index');
+        Navigator.of(context).pushNamedAndRemoveUntil('/index', (Route<dynamic> route) => false);
       }else{
         CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
       }

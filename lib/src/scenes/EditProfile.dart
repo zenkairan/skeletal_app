@@ -65,9 +65,10 @@ class EditProfileState extends State<EditProfile> {
                     decoration: InputDecoration(
                       labelText: CustomLocalization.of(context).userDescription, 
                     ),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null, //overflowing screen
-                  onSaved: (value) => _userDescription = value,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null, //overflowing screen
+                    initialValue: loggedUser.user != null && loggedUser.user.about != null? loggedUser.user.about: '',
+                    onSaved: (value) => _userDescription = value,
                   ),
                   RaisedButton(
                     child: Text(CustomLocalization.of(context).save),
@@ -94,7 +95,7 @@ class EditProfileState extends State<EditProfile> {
       if(response.statusCode == 200){
         if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
           loggedUser.user = User.fromJason(json.decode(response.body));
-          Navigator.pushReplacementNamed(context, '/index');
+          Navigator.of(context).pushNamedAndRemoveUntil('/index', (Route<dynamic> route) => false);
         }else{
           CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).userNotFound);
         }
