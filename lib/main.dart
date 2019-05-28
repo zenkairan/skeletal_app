@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/scenes/WelcomeScreen.dart';
@@ -8,12 +9,20 @@ import 'package:skeletal_app/src/scenes/RegisterPage.dart';
 import 'package:skeletal_app/src/scenes/Index.dart';
 import 'package:skeletal_app/src/scenes/ProductDetail.dart';
 import 'package:skeletal_app/src/scenes/EditProfile.dart';
+import 'package:skeletal_app/src/beans/User.dart';
+import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/FileManager.dart';
 
-void main(){
-
+void main() async{
+  UserSingleton loggedUser = new UserSingleton();
+  String userString = await FileManager.readUser();
+  if(userString != null){
+    loggedUser.user = User.fromJason(json.decode(userString));
+    //check user with api
+  }
   runApp(
     MaterialApp(
-      home: WelcomeScreen(),
+      home: loggedUser.user != null? Index(): WelcomeScreen(),
       routes: <String, WidgetBuilder>{
         '/login': (BuildContext context) => LoginPage(),
         '/register': (BuildContext context) => RegisterPage(),

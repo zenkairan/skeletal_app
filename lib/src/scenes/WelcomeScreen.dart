@@ -9,6 +9,7 @@ import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 import 'package:skeletal_app/src/beans/User.dart';
 import 'package:skeletal_app/src/services/Connection.dart';
 import 'package:skeletal_app/src/services/CustomDialog.dart';
+import 'package:skeletal_app/src/services/FileManager.dart';
 
 /**
  * tela com opções para login e cadastro.
@@ -133,6 +134,7 @@ class WelcomeScreenState extends State<WelcomeScreen> with RouteAware{
       if(response.statusCode == 200){
         if(response.body != null && response.body.isNotEmpty && response.body != 'null'){
           loggedUser.user = User.fromJason(json.decode(response.body));
+          FileManager.writeUser(json.encode(loggedUser.user));
           // Navigator.pushReplacementNamed(context, '/index'); //not replacing for some reason
           Navigator.of(context).pushNamedAndRemoveUntil('/index', (Route<dynamic> route) => false);
         }else{

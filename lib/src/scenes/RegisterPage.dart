@@ -8,6 +8,7 @@ import 'package:skeletal_app/src/beans/User.dart';
 import 'package:skeletal_app/src/singletons/UserSingleton.dart';
 import 'package:skeletal_app/src/services/Connection.dart';
 import 'package:skeletal_app/src/services/CustomDialog.dart';
+import 'package:skeletal_app/src/services/FileManager.dart';
 
 
 /**
@@ -126,6 +127,7 @@ class RegisterPageState extends State<RegisterPage>{
       //se o usuario já estiver cadastrado, retornar statuscode de erro
       if(response.statusCode == 200){
         appUser.user = User.fromJason(json.decode(response.body));
+        FileManager.writeUser(json.encode(appUser.user));
         Navigator.of(context).pushNamedAndRemoveUntil('/index', (Route<dynamic> route) => false);
       }else{
         CustomDialog.showSnackbar(_innerContext, CustomLocalization.of(_innerContext).connectionError);
