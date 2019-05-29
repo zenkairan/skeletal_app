@@ -28,5 +28,11 @@ class FileManager{
       return null;
     }
   }
+  static void deleteUser() async{
+    final file = await _localFile;
+    if(file.existsSync()){
+      file.delete();
+    }
+  }
 
 }

@@ -24,6 +24,7 @@ void main() async{
     MaterialApp(
       home: loggedUser.user != null? Index(): WelcomeScreen(),
       routes: <String, WidgetBuilder>{
+        '/welcome': (BuildContext context) => WelcomeScreen(),
         '/login': (BuildContext context) => LoginPage(),
         '/register': (BuildContext context) => RegisterPage(),
         '/index': (BuildContext context) => Index(),
