@@ -7,6 +7,7 @@ class User{
   String password;
   String facebookId;
   String picture;
+  String about;
   
   User(String name, String email, String password){
     this.name = name;
@@ -20,7 +21,8 @@ class User{
     email = json['email'],
     password = json['password'],
     facebookId = json['facebookId'],
-    picture = json['picture'];
+    picture = json['picture'],
+    about = json['about'];
 
   Map<String, dynamic> toJson() =>
   {
@@ -30,6 +32,7 @@ class User{
     'password': password,
     'facebookId': facebookId,
     'picture': picture,
+    'about': about
   };
 
 @override

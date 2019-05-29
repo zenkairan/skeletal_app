@@ -35,6 +35,8 @@ class CustomLocalization {
       'connectionError': 'Connection error, try again later',
       'defaultError': 'An error has occurred, try again later', 
       'loginError': 'Invalid username or password',
+      'userNotFound': 'User not found',
+      'logout': 'Log out',
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -57,6 +59,8 @@ class CustomLocalization {
       'connectionError': 'Erro de conexão, tente novamente mais tarde',
       'defaultError': 'Ocorreu um erro, tente novamente mais tarde',
       'loginError': 'Usuário ou senha inválidos',
+      'userNotFound': 'Usuário não encontrado',
+      'logout': 'Sair',
     },
   };
 
@@ -120,6 +124,12 @@ class CustomLocalization {
   }
   String get loginError{
     return _localizedValues[locale.languageCode]['loginError'];
+  }
+  String get userNotFound{
+    return _localizedValues[locale.languageCode]['userNotFound'];
+  }
+  String get logout{
+    return _localizedValues[locale.languageCode]['logout'];
   }
 }
 

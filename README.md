@@ -3,7 +3,8 @@
 This is a personal template project for apps using the Flutter framework and Dart language. At its current state it contains simple page navigation with log in forms (using static data at the moment), language localization and modular color configuration.
 
 - Login with Facebook implemented.
-- User creation and login with conection to a rest api
+- User creation and login with conection to a rest api.
+- User storage and logout.
 
 ---------------------------
 
