@@ -37,6 +37,7 @@ class CustomLocalization {
       'loginError': 'Invalid username or password',
       'userNotFound': 'User not found',
       'logout': 'Log out',
+      'noProducts': 'No products found',
     },
     'pt': {
       'welcome': 'Bem Vindo',
@@ -61,6 +62,7 @@ class CustomLocalization {
       'loginError': 'Usuário ou senha inválidos',
       'userNotFound': 'Usuário não encontrado',
       'logout': 'Sair',
+      'noProducts': 'Nenhum produto encontrado',
     },
   };
 
@@ -130,6 +132,9 @@ class CustomLocalization {
   }
   String get logout{
     return _localizedValues[locale.languageCode]['logout'];
+  }
+  String get noProducts{
+    return _localizedValues[locale.languageCode]['noProducts'];
   }
 }
 

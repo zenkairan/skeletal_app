@@ -29,4 +29,9 @@ class Connection{
     return http.put(_userUrl + id, headers: {'Content-Type': "application/json"},
     body: userJson);
   }
+
+  //producst
+  static Future<http.Response> getProducts(){
+    return http.get(_productUrl);
+  }
 }

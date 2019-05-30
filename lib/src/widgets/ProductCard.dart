@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
+import 'package:skeletal_app/src/beans/Product.dart';
 
 /**
  * Widget que apresenta o card do produto do aplicativo, 
  * com o intuito de apresentar uma lista
  */
 class ProductCard extends StatefulWidget{
+  ProductCard(this.product);
+  final Product product;
   @override
-  createState() => ProductCardState();
+  createState() => ProductCardState(product);
 }
 
 class ProductCardState extends State<ProductCard>{
+  ProductCardState(this.product);
+  Product product;
 
   @override
   Widget build(BuildContext context){
@@ -23,11 +28,11 @@ class ProductCardState extends State<ProductCard>{
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                title: Text('Product title', style: TextStyle(color: BaseColors.textColor),),
-                subtitle: Text('Product Description', style: TextStyle(color: BaseColors.textColor),),
+                title: Text(product.title, style: TextStyle(color: BaseColors.textColor),),
+                subtitle: Text(product.description, style: TextStyle(color: BaseColors.textColor),),
                 onTap: () => Navigator.pushNamed(context, '/product'),
                 trailing: Image.network(
-                  'https://upload.wikimedia.org/wikipedia/en/b/bc/Archspire_Relentless_Mutation_Album_Artwork.jpg',
+                  product.url,
                   scale: 4.6,
                   ),
               ),

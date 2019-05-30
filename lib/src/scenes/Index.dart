@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
+import 'package:skeletal_app/src/beans/Product.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
 import 'package:skeletal_app/src/widgets/ProductCard.dart';
 import 'package:skeletal_app/src/widgets/ProfilePic.dart';
 import 'package:skeletal_app/src/widgets/Paragraph.dart';
 import 'package:skeletal_app/src/scenes/LeftDrawer.dart';
 import 'package:skeletal_app/src/singletons/UserSingleton.dart';
+import 'package:skeletal_app/src/services/Connection.dart';
 
 /**
  * Página inicial, contendo abas e menu lateral
@@ -56,9 +60,26 @@ class IndexState extends State<Index>{
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () =>_downloadProducts(),
-      child: ListView(
-        children: _getProducts(),
-      ),
+      child: FutureBuilder(
+        future: _getProducts(),
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+          if(snapshot.hasData){
+            return ListView(
+              children: snapshot.data,
+            );
+          }else{
+            return ListView(
+              children: <Widget>[
+                Container(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              ],
+            );
+          }
+        },
+      ) 
     );
   }
 
@@ -87,18 +108,21 @@ class IndexState extends State<Index>{
     );
   }
 
-  List<Widget> _getProducts(){
-    print('getting producst');
-    return [
-      ProductCard(),
-        ProductCard(),
-        ProductCard(),
-        ProductCard(),
-        ProductCard(),
-        ProductCard(),
-        ProductCard(),
-        ProductCard(),
-    ];
+//TODO: paginação
+  Future<List<Widget>> _getProducts() async{
+    var response = await Connection.getProducts();
+    List<Widget> productCards = new List<Widget>();
+    if(response.statusCode == 200){
+      List<dynamic> productsJson = jsonDecode(response.body)['docs'];
+      productsJson.forEach((productJson){
+        productCards.add(new ProductCard(Product.fromJson(productJson)));
+      });
+    }else{
+      productCards.add(new Center(
+        child: Text(CustomLocalization.of(context).noProducts, style: TextStyle(fontSize: 20),),
+      ));
+    }
+    return productCards;
   }
   _downloadProducts(){
     return _getProducts();
