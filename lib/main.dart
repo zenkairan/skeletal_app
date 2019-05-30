@@ -28,7 +28,7 @@ void main() async{
         '/login': (BuildContext context) => LoginPage(),
         '/register': (BuildContext context) => RegisterPage(),
         '/index': (BuildContext context) => Index(),
-        '/product': (BuildContext context) => ProductDetail(),
+        // '/product': (BuildContext context) => ProductDetail(),
         '/edit': (BuildContext context) => EditProfile(),
       },
       localizationsDelegates: [

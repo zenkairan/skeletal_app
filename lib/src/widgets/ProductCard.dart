@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletal_app/src/Localization/CustomLocalizaton.dart';
 import 'package:skeletal_app/src/widgets/BaseColors.dart';
 import 'package:skeletal_app/src/beans/Product.dart';
+import 'package:skeletal_app/src/scenes/ProductDetail.dart';
 
 /**
  * Widget que apresenta o card do produto do aplicativo, 
@@ -30,7 +31,11 @@ class ProductCardState extends State<ProductCard>{
               ListTile(
                 title: Text(product.title, style: TextStyle(color: BaseColors.textColor),),
                 subtitle: Text(product.description, style: TextStyle(color: BaseColors.textColor),),
-                onTap: () => Navigator.pushNamed(context, '/product'),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetail(product)
+                  )
+                ),
                 trailing: Image.network(
                   product.url,
                   scale: 4.6,
