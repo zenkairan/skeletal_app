@@ -25,6 +25,13 @@ class IndexState extends State<Index>{
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
     new GlobalKey<RefreshIndicatorState>();
   UserSingleton loggedUser = new UserSingleton();
+  List<Widget> _products;
+
+  @override
+  void initState() {
+    super.initState();
+    _getProducts();
+  }
 
   @override
   Widget build(BuildContext context){
@@ -60,26 +67,17 @@ class IndexState extends State<Index>{
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () =>_downloadProducts(),
-      child: FutureBuilder(
-        future: _getProducts(),
-        builder: (BuildContext context, AsyncSnapshot snapshot){
-          if(snapshot.hasData){
-            return ListView(
-              children: snapshot.data,
-            );
-          }else{
-            return ListView(
-              children: <Widget>[
+      child: ListView(
+            children: _products != null? _products:
+              <Widget>[
                 Container(
                   child: Center(
+                //TODO: Circular progress ficou muito grande
                     child: CircularProgressIndicator(),
                   ),
                 )
-              ],
-            );
-          }
-        },
-      ) 
+            ]
+          ),
     );
   }
 
@@ -109,7 +107,9 @@ class IndexState extends State<Index>{
   }
 
 //TODO: paginação
+//TODO: busca por nome
   Future<List<Widget>> _getProducts() async{
+    print('downloading shit');
     var response = await Connection.getProducts();
     List<Widget> productCards = new List<Widget>();
     if(response.statusCode == 200){
@@ -122,9 +122,18 @@ class IndexState extends State<Index>{
         child: Text(CustomLocalization.of(context).noProducts, style: TextStyle(fontSize: 20),),
       ));
     }
+    setState(() {
+      _products = productCards;
+    });
     return productCards;
   }
-  _downloadProducts(){
-    return _getProducts();
+  Future<void> _downloadProducts() async{
+    setState(() {
+      _products = null;
+      //products é setado novamente para null para que apareça o
+      //CircularProgressIndicator
+    });
+     _getProducts();
+     return null;
   }
 }
