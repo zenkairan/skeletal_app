@@ -31,7 +31,7 @@ class Connection{
   }
 
   //producst
-  static Future<http.Response> getProducts(){
-    return http.get(_productUrl);
+  static Future<http.Response> getProducts({int page}){
+    return http.get(page == null? _productUrl: _productUrl + '?&page=$page');
   }
 }

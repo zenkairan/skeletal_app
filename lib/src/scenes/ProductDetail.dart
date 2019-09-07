@@ -6,7 +6,7 @@ import 'package:skeletal_app/src/beans/Product.dart';
 
 class ProductDetail extends StatefulWidget{
   ProductDetail(this.product);
-  Product product;
+  final Product product;
   @override
   createState() => ProductDetailState(product);
 }

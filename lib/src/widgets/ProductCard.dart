@@ -36,9 +36,9 @@ class ProductCardState extends State<ProductCard>{
                     builder: (context) => ProductDetail(product)
                   )
                 ),
-                trailing: Image.network(
-                  product.url,
-                  scale: 4.6,
+                trailing: FadeInImage.assetNetwork(
+                  image: (product.url != null || !product.url.isEmpty)? product.url: 'assets/profilepic_placeholder.png',
+                  placeholder: 'assets/profilepic_placeholder.png',
                   ),
               ),
           ],
