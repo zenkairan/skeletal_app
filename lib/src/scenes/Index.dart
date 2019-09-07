@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -26,11 +27,21 @@ class IndexState extends State<Index>{
     new GlobalKey<RefreshIndicatorState>();
   UserSingleton loggedUser = new UserSingleton();
   List<Widget> _products;
+  int page = 1;
+  int totalPages = 1;
+
+  final ScrollController scrollController = new ScrollController();
 
   @override
   void initState() {
     super.initState();
     _getProducts();
+  }
+
+   @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -64,20 +75,24 @@ class IndexState extends State<Index>{
   }
 
   Widget _tab1(BuildContext context){
-    return RefreshIndicator(
+    return NotificationListener(
+    child: RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () =>_downloadProducts(),
       child: ListView(
-            children: _products != null? _products:
-              <Widget>[
-                Container(
-                  child: Center(
-                //TODO: Circular progress ficou muito grande
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-            ]
-          ),
+          children: _products != null? _products:
+            <Widget>[
+              Container(
+                child: Center(
+              //TODO: Circular progress ficou muito grande
+                  child: CircularProgressIndicator(),
+                ),
+              )
+          ],
+          controller: scrollController,
+        ),
+      ), 
+      onNotification: _onNotification,
     );
   }
 
@@ -109,31 +124,66 @@ class IndexState extends State<Index>{
 //TODO: paginação
 //TODO: busca por nome
   Future<List<Widget>> _getProducts() async{
-    print('downloading shit');
-    var response = await Connection.getProducts();
+    var response;
+    if(this.page == 1){
+      response = await Connection.getProducts();
+    } else{
+      print('page: ' + this.page.toString());
+      response = await Connection.getProducts(page: this.page);
+    }
     List<Widget> productCards = new List<Widget>();
     if(response.statusCode == 200){
       List<dynamic> productsJson = jsonDecode(response.body)['docs'];
       productsJson.forEach((productJson){
         productCards.add(new ProductCard(Product.fromJson(productJson)));
       });
+      print(Product.fromJson(productsJson.first));
+      var pages = jsonDecode(response.body)['pages'];
+      if(pages != null){
+        this.totalPages = pages;
+      }
     }else{
       productCards.add(new Center(
         child: Text(CustomLocalization.of(context).noProducts, style: TextStyle(fontSize: 20),),
       ));
     }
     setState(() {
-      _products = productCards;
+      if(this.page == 1){
+        _products = productCards;
+      }else{
+        //por algum motivo só aparece depois de recarregar a página
+        _products.addAll(productCards);
+      }
+      print(_products.length);
     });
     return productCards;
   }
   Future<void> _downloadProducts() async{
     setState(() {
+      this.page = 1;
       _products = null;
       //products é setado novamente para null para que apareça o
       //CircularProgressIndicator
     });
      _getProducts();
      return null;
+  }
+
+  //se a lista inicial for muito pequena, nunca haverá notificação
+  //load more button é mais simples e melhor usabilidade
+  bool _onNotification(ScrollNotification notification) {
+    if(notification is ScrollUpdateNotification){
+      if (scrollController.position.maxScrollExtent > scrollController.offset &&
+        scrollController.position.maxScrollExtent - scrollController.offset <= 50 &&
+        scrollController.position.userScrollDirection == ScrollDirection.reverse){
+          //deve evitar fazer carregamentos multiplos
+          print(scrollController.position.userScrollDirection);
+          if(this.page < this.totalPages){
+            this.page += 1;
+            _getProducts();
+          }
+        } 
+    }
+    return true;
   }
 }

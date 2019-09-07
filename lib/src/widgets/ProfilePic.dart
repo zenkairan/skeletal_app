@@ -14,26 +14,21 @@ class ProfilePic extends StatefulWidget{
 
 class ProfilePicState extends State<ProfilePic>{
   ProfilePicState({this.url, this.heigth, this.width});
+  //TODO: change from url to imageStream
   String url;
   double heigth = 120.00;
   double width = 120.00;
-  ImageProvider _imagem;
 
   @override
     void initState() {
+      print(url);
       super.initState();
       if(heigth == null)
         this.heigth = 120.0;
       if(width == null)
         this.width = 120.0;
       if(this.url == null || this.url.isEmpty){
-        this._imagem = new AssetImage(
-          'assets/profilepic_placeholder.png',
-        );
-      }else{
-        this._imagem = new NetworkImage(
-          this.url,
-          );
+        this.url = 'assets/profilepic_placeholder.png';
       }
     }
 
@@ -47,12 +42,22 @@ class ProfilePicState extends State<ProfilePic>{
       width: this.width,
       foregroundDecoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(width: 5, color: BaseColors.borderColor),
-        image: DecorationImage(
-          image: this._imagem,
-          fit: BoxFit.fill
-        )
+        border: Border.all(width: 8, color: BaseColors.borderColor),
+        // image: DecorationImage(
+        //   image: this.getImageProvider(),
+        //   fit: BoxFit.fill
+        // )
       ),
+
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular((this.width)),
+        child: FadeInImage.assetNetwork(
+          image: this.url,
+          height: this.heigth,
+          width: this.width,
+          placeholder: 'assets/profilepic_placeholder.png',
+        ),
+      )
     );
   }
 }

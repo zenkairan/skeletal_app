@@ -37,6 +37,6 @@ class User{
 
 @override
   String toString(){
-    return ' name: ' + this.name + 'email: ' + this.email;
+    return 'name: ${this.name}; email: ${this.email}';
   }
 }
