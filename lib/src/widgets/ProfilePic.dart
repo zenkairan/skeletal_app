@@ -14,7 +14,6 @@ class ProfilePic extends StatefulWidget{
 
 class ProfilePicState extends State<ProfilePic>{
   ProfilePicState({this.url, this.heigth, this.width});
-  //TODO: change from url to imageStream
   String url;
   double heigth = 120.00;
   double width = 120.00;
@@ -43,21 +42,18 @@ class ProfilePicState extends State<ProfilePic>{
       foregroundDecoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(width: 8, color: BaseColors.borderColor),
-        // image: DecorationImage(
-        //   image: this.getImageProvider(),
-        //   fit: BoxFit.fill
-        // )
       ),
 
       child: ClipRRect(
-        borderRadius: BorderRadius.circular((this.width)),
+        borderRadius: BorderRadius.circular(50.0),
         child: FadeInImage.assetNetwork(
+          fit: BoxFit.fill,
           image: this.url,
           height: this.heigth,
           width: this.width,
           placeholder: 'assets/profilepic_placeholder.png',
         ),
-      )
+      ),
     );
   }
 }
